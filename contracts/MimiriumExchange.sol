@@ -1,9 +1,10 @@
 pragma solidity ^0.4.24;
 
 import "./MimiriumToken.sol";
+import "./Versionable.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
-contract MimiriumExchange is Ownable {
+contract MimiriumExchange is Versionable, Ownable {
     using SafeMath for uint256;
 
     MimiriumToken public token;

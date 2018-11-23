@@ -1,6 +1,8 @@
 pragma solidity ^ 0.4.24;
 
-contract CompanyRegister {
+import "./Versionable.sol";
+
+contract CompanyRegister is Versionable {
 
     struct Company {
         string name;

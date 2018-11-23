@@ -1,9 +1,9 @@
 pragma solidity ^ 0.4.24;
-pragma experimental ABIEncoderV2;
 
+import "./Versionable.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
-contract NodeRegister is Ownable {
+contract NodeRegister is Versionable, Ownable {
 
     struct Node {
         address id;

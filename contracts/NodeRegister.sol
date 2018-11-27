@@ -12,32 +12,43 @@ contract NodeRegister is Versionable, Ownable {
         uint256 registrationTime;
     }
 
+    mapping(address => bool) internal whitelisted;
+
     mapping(address => Node) internal nodes;
-    Node[] internal nodesList;
+    address[] internal nodesList;
 
     event NodeRegistered(Node node);
     event NodeRevoked(Node node);
+    event NodeWhitelisted(address id);
+
+    modifier onlyWhitelisted() {
+        require(whitelisted[msg.sender] == true, "Address not whitelisted");
+        _;
+    }
 
     constructor() public {
     }
 
     function whitelistNode(address _id) public onlyOwner {
-        
+        whitelisted[_id] = true;
+        emit NodeWhitelisted(_id);
     }
 
-    function registerNode(string _name, string _url) public onlyOwner {
+    function registerNode(string _name, string _url) public onlyWhitelisted returns(address, string, string, uint256) {
         address id = msg.sender;
-        Node memory node = Node(id, _name, _url, now);
-        nodes[id] = node;
-        nodesList.push(node);        
+        Node memory n = Node(id, _name, _url, now);
+        nodes[id] = n;
+        nodesList.push(id);
+        return (n.id, n.name, n.url, n.registrationTime);
     }
 
-    function getNode(address _id) public view returns(Node) {
-        require(nodes[_id].id != _id, "Node doesn't exist");
-        return nodes[_id];
+    function getNode(address _id) public view returns(address, string, string, uint256) {        
+        require(nodes[_id].id == _id, "Node doesn't exist");
+        Node memory n = nodes[_id];
+        return (n.id, n.name, n.url, n.registrationTime);
     }
 
-    function getActiveNodes() public view returns(Node[]) {
+    function getNodesList() public view returns(address[]) {
         return nodesList;
     }
 }

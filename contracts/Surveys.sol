@@ -69,7 +69,6 @@ contract Surveys {
                 emit SurveyExpired(idHash, s.id);
                 delete surveyMap[idHash];
                 delete surveyList[i];
-                
             }
         }
     }

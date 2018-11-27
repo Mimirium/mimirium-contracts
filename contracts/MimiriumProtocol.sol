@@ -5,10 +5,9 @@ contract MimiriumProtocol {
     string public protocol;
     uint256 public minimumBalance;
 
-    mapping()
+    //mapping()
 
     event CompanyRegistered(
-        Company company
     );
 
     constructor() internal {

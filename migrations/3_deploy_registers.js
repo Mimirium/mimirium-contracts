@@ -1,6 +1,6 @@
 var NodeRegister = artifacts.require("./NodeRegister.sol");
-var CompanyRegsiter = artifacts.require("./CompanyRegsiter.sol");
-var CampaignRegsiter = artifacts.require("./CampaignRegsiter.sol");
+var CompanyRegister = artifacts.require("./CompanyRegister.sol");
+var CampaignRegsiter = artifacts.require("./CampaignRegister.sol");
 /*var fs = require('fs');
 
 saveJson = function (network, contractData) {
@@ -17,7 +17,7 @@ module.exports = function (deployer, network) {
     deployer
         .deploy(NodeRegister)
         .then((node) => {
-            deployer.deploy(CompanyRegsiter)
+            deployer.deploy(CompanyRegister)
         })
         .then((company) => {
             deployer.deploy(CampaignRegsiter, company)

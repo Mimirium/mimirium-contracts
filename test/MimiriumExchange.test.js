@@ -12,14 +12,12 @@ contract('MimiriumExchange', function (accounts) {
     let token;
     let exchange;
 
-    
+    before(async () => {
+        token = await MimiriumToken.new();            
+        exchange = await MimiriumExchange.new(token.address);
+    })
 
-    describe("Deployment", function () {
-
-        before(async () => {
-            token = await MimiriumToken.new();            
-            exchange = await MimiriumExchange.new(token.address);
-        })
+    describe("Basic", function () {
 
         it("has the correct token", async () => {
             let contractToken = await exchange.token();
@@ -30,22 +28,25 @@ contract('MimiriumExchange', function (accounts) {
             let tx = await token.addMinter(exchange.address);
             assert.equal(tx.logs[0].event, "MinterAdded");
         })
+
+        it("owner can change the rate", async () => {
+            let rate = await exchange.rate();
+            let tx = await exchange.setRate(rate*2, {from: owner});
+            assert.equal(tx.logs[0].event, "RateChanged");
+        })
+
+        it("non-owner can NOT change the rate", async () => {
+            await assertThrows(exchange.setRate(1, {from: user1}));
+        })
     })
 
     describe("Exchange", function () {
 
-        const purchaseAmount = web3.toWei(1, "ether");
-
-        before(async () => {
-            token = await MimiriumToken.new();            
-            exchange = await MimiriumExchange.new(token.address);
-        })
+        const purchaseAmount = 1*10**9;
 
         it("can buy mimiriums", async () => {
-            await token.addMinter(exchange.address);
             let balanceBefore = (await token.balanceOf(user1)).toNumber();
             let tx = await exchange.buy({from: user1, value: purchaseAmount});
-
             let balanceAfter = (await token.balanceOf(user1)).toNumber();
             assert.equal(balanceAfter, balanceBefore + purchaseAmount);
             let balance = (await web3.eth.getBalance(exchange.address)).toNumber();

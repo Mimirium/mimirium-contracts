@@ -13,39 +13,43 @@ contract('CompanyRegister', function (accounts) {
     let register;
 
     before(async () => {
-        register = await CompanyRegister.new();            
+        register = await CompanyRegister.new();
     })
 
     describe("Registering", function () {
 
         it("owner can can register company", async () => {
-            let node = await register.registerCompany.call("Test Company1", {from: owner});
-            assert(node[0], node1);
-            assert(node[1], "Test Node1");
-            assert(node[2], "http://testurl.com/");
-            await register.registerNode("Test Node1", "http://testurl.com/", {from: node1});
+            let tx = await register.registerCompany("Test Company1", {from: owner});
+            assert.equal(tx.logs[0].event, "CompanyRegistered");
         })
 
-        it("not whitelisted node can NOT register", async () => {
-            await assertThrows(register.registerNode("Test Node2", "http://testurl.com/", {from: node2}));
+        it("non-owner node can NOT register a company", async () => {
+            await assertThrows(register.registerCompany("Test Company2", {from: node2}));
         })
     })
 
     describe("Listing", function () {
 
-        let nodesList;
+        let companiesList;
 
-        it("node list can be retrieved", async () => {
-            nodesList = await register.getNodesList();
-            assert.isNotEmpty(nodesList);
+        it("companies list can be retrieved", async () => {
+            companiesList = await register.getCompaniesList();
+            assert.isNotEmpty(companiesList);
         })
 
-        it("node data can be retrieved", async () => {
-            console.log(nodesList[0]);
-            let node = await register.getNode(nodesList[0]);
-            assert(node[0], node1);
-            assert(node[1], "Test Node1");
-            assert(node[2], "http://testurl.com/");
+        it("company retrieved should exist", async () => {
+            let exists = await register.companyExists(companiesList[0]);
+            assert.isTrue(exists);
+        })
+
+        it("company data can be retrieved", async () => {
+            let company = await register.getCompany(companiesList[0]);
+            assert.isNotNull(company[0]);
+            assert.equal(company[1], "Test Company1");
+            assert.isNotNull(company[2]);
+            assert.isNotNull(company[3]);
+            assert.isNotNull(company[4]);
+            assert.isNotNull(company[5]);
         })
     })
 })

@@ -23,7 +23,7 @@ contract CompanyRegister is Versionable, Ownable {
         uint256 createdTime
     );
 
-    constructor() internal {
+    constructor() public {
     }
 
     function registerCompany(string _name) public onlyOwner returns(address) {
@@ -33,15 +33,19 @@ contract CompanyRegister is Versionable, Ownable {
             id = generateUniqueId(++nonce);
         }
         
-        Company memory c = Company(id, name, 0, now, 0, 0);
+        Company memory c = Company(id, _name, 0, now, 0, 0);
         companies[id] = c;
         companiesList.push(id);
-        emit CompanyRegistered(id, name, now);
+        emit CompanyRegistered(id, _name, now);
         return (id);
     }
 
+    function companyExists(address _id) public view returns(bool) {
+        return (_id != address(0) && companies[_id].id == _id);
+    }
+
     function getCompany(address _id) public view returns(address, string, uint256, uint256, uint256, uint256) {        
-        require(companies[_id].id == _id, "Company doesn't exist");
+        require(companyExists(_id), "Company doesn't exist");
         Company memory c = companies[_id];
         return (c.id, c.name, c.balance, c.createdTime, c.lastCampaignTime, c.spent);
     }
@@ -50,8 +54,8 @@ contract CompanyRegister is Versionable, Ownable {
         return companiesList;
     }
 
-    function generateUniqueId(uint256 nonce) internal pure returns (address) {
-        bytes20 id = ripemd160(keccak256(abi.encodePacked(nonce, blockhash(block.number-1), block.timestamp)));
+    function generateUniqueId(uint256 _nonce) internal view returns (address) {
+        bytes20 id = ripemd160(keccak256(abi.encodePacked(_nonce, blockhash(block.number-1), block.timestamp)));
         return address(id);
     }
 }

@@ -50,7 +50,6 @@ contract('NodeRegister', function (accounts) {
         })
 
         it("node data can be retrieved", async () => {
-            console.log(nodesList[0]);
             let node = await register.getNode(nodesList[0]);
             assert(node[0], node1);
             assert(node[1], "Test Node1");

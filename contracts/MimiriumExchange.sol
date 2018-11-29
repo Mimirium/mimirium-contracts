@@ -19,8 +19,10 @@ contract MimiriumExchange is Versionable, Ownable {
         rate = 1;
     }
 
-    function setRate(uint256 _newRate) public onlyOwner {
+    function setRate(uint256 _newRate) public {
+        require(msg.sender == owner(), "Not owner");
         require(_newRate > 0, "Rate must be greated than 0");
+        require(_newRate != rate, "Same rate provided");
         emit RateChanged(rate, _newRate);
         rate = _newRate;
     }

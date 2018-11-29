@@ -4,7 +4,7 @@ import "./Versionable.sol";
 import "./CompanyRegister.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
-contract CampaignRegsiter is Versionable, Ownable {
+contract CampaignRegister is Versionable, Ownable {
 
     struct Campaign {
         address id;
@@ -43,16 +43,17 @@ contract CampaignRegsiter is Versionable, Ownable {
     }
 
     function createCampaign(
-        address company, 
-        uint256 minRespondents, 
-        uint256 maxRespondents, 
-        uint256 startTime, 
-        uint256 endTime) 
+        address _company, 
+        uint256 _minRespondents, 
+        uint256 _maxRespondents, 
+        uint256 _startTime, 
+        uint256 _endTime) 
         public payable onlyOwner 
         returns(address) {
         
-        require(endTime > startTime, "endTime must be after startTime");
-        require(startTime >= now, "Campaigns cannot be in the past");
+        require(companyRegister.companyExists(_company), "This company is not registered");
+        require(_endTime > _startTime, "endTime must be after startTime");
+        require(_startTime >= now, "Campaigns cannot be in the past");
         require(msg.value > 0, "Give some cash");
         // TODO: Check min max respondents
 
@@ -62,10 +63,10 @@ contract CampaignRegsiter is Versionable, Ownable {
             id = generateUniqueId(++nonce);
         }
 
-        Campaign memory c = Campaign(id, company, minRespondents, maxRespondents, msg.value, startTime, endTime);
+        Campaign memory c = Campaign(id, _company, _minRespondents, _maxRespondents, msg.value, _startTime, _endTime);
         campaigns[id] = c;
         campaignsList.push(id);
-        emit CampaignCreated(id, company, minRespondents, maxRespondents, msg.value, startTime, endTime);
+        emit CampaignCreated(id, _company, _minRespondents, _maxRespondents, msg.value, _startTime, _endTime);
         return (id);
     }
 
@@ -79,7 +80,7 @@ contract CampaignRegsiter is Versionable, Ownable {
         return campaignsList;
     }
 
-    function generateUniqueId(uint256 nonce) internal pure returns (address) {
+    function generateUniqueId(uint256 nonce) internal view returns (address) {
         bytes20 id = ripemd160(keccak256(abi.encodePacked(nonce, blockhash(block.number-1), block.timestamp)));
         return address(id);
     }

@@ -1,5 +1,6 @@
 const assertThrows = require("./utils/assertThrows.js");
-const CampaignRegsiter = artifacts.require('./CampaignRegsiter.sol')
+const CompanyRegister = artifacts.require('./CompanyRegister.sol')
+const CampaignRegister = artifacts.require('./CampaignRegister.sol')
 
 contract('CampaignRegsiter', function (accounts) {
 
@@ -8,35 +9,56 @@ contract('CampaignRegsiter', function (accounts) {
         user1
     ] = accounts;
 
+    const now = Math.floor(Date.now() / 1000) + 60*60; // one hour ahead of time
+    const oneDay = 60*60*24; // 60 sec x 60 min x 24 hours
+
     let campaigns;
     let companies;
+    let companyId;
 
     before(async () => {
-        campaigns = await CampaignRegsiter.new();            
-        companies = await 
+        companies = await CompanyRegister.new();
+        campaigns = await CampaignRegister.new(companies.address);
+    })
+
+    describe("Initialization", function () {
+
+        it("initializes properly", async () => {
+            assert.isNotNull(companies);
+            assert.isNotNull(campaigns);
+        })
+
+        it("company can be added", async () => {
+            let tx = await companies.registerCompany("Mimirium Ltd");
+            assert.equal(tx.logs[0].event, "CompanyRegistered");
+            let list = await companies.getCompaniesList();
+            assert.isNotEmpty(list);
+            companyId = list[0];
+        })
     })
 
     describe("Creating Campaigns", function () {
 
         it("owner can create campaign with correct data", async () => {
-            camapaigns.createCampaign();
-            address company, 
-        uint256 minRespondents, 
-        uint256 maxRespondents, 
-        uint256 startTime, 
-        uint256 endTime) 
+            let tx = await campaigns.createCampaign(companyId, 0, 10, now, now + oneDay, {from: owner, value: web3.toWei(1, "ether")});
+            assert.equal(tx.logs[0].event, "CampaignCreated");
         })
 
         it("non-owner can NOT create campaign with correct data", async () => {
+            await assertThrows(campaigns.createCampaign(companyId, 0, 10, now, now + oneDay, {from: user1, value: web3.toWei(1, "ether")}));
         })
 
-        it("non-owner can NOT create campaign without budget", async () => {
+        it("owner can NOT create campaign without budget", async () => {
+            await assertThrows(campaigns.createCampaign(companyId, 0, 10, now, now + oneDay, {from: owner, value: 0}));
         })
 
-        it("non-owner can NOT create campaign with incorrect timing", async () => {
+        it("owner can NOT create campaign with incorrect timing", async () => {
+            await assertThrows(campaigns.createCampaign(companyId, 0, 10, now, now - oneDay, {from: owner, value: web3.toWei(1, "ether")}));
+            await assertThrows(campaigns.createCampaign(companyId, 0, 10, now - oneDay, now + oneDay, {from: owner, value: web3.toWei(1, "ether")}));
         })
 
-        it("owner can NOT create campaign with incorrect data", async () => {
+        it("owner can NOT create campaign from non-existing company", async () => {
+            await assertThrows(campaigns.createCampaign(0x00000000000000000000, 0, 10, now, now + oneDay, {from: owner, value: web3.toWei(1, "ether")}));
         })
     })
 
@@ -45,16 +67,19 @@ contract('CampaignRegsiter', function (accounts) {
         let campaignsList;
 
         it("campaign list can be retrieved", async () => {
-            campaignsList = await register.getCampaignsList();
+            campaignsList = await campaigns.getCampaignsList();
             assert.isNotEmpty(campaignsList);
         })
 
         it("campaign data can be retrieved", async () => {
-            console.log(campaignsList[0]);
-            let campaign = await register.getCampaign(campaignsList[0]);
-            //assert(node[0], node1);
-            //assert(node[1], "Test Node1");
-            //assert(node[2], "http://testurl.com/");
+            let campaign = await campaigns.getCampaign(campaignsList[0]);
+            assert.isNotNull(campaign[0]);
+            assert.equal(campaign[1], companyId);
+            assert.equal(campaign[2], 0);
+            assert.equal(campaign[3], 10);
+            assert.equal(campaign[4], web3.toWei(1, "ether"));
+            assert.equal(campaign[5], now);
+            assert.equal(campaign[6], now + oneDay);
         })
     })
 })

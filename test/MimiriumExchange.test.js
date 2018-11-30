@@ -42,15 +42,15 @@ contract('MimiriumExchange', function (accounts) {
 
     describe("Exchange", function () {
 
-        const purchaseAmount = 1*10**9;
+        const purchaseAmount = 1*10**9; // 1 Gwei
 
         it("can buy mimiriums", async () => {
             let balanceBefore = (await token.balanceOf(user1)).toNumber();
+            let rate = await exchange.rate();
             let tx = await exchange.buy({from: user1, value: purchaseAmount});
             let balanceAfter = (await token.balanceOf(user1)).toNumber();
-            assert.equal(balanceAfter, balanceBefore + purchaseAmount);
+            assert.equal(balanceAfter, balanceBefore + purchaseAmount*rate);
             let balance = (await web3.eth.getBalance(exchange.address)).toNumber();
-
             assert.equal(balance, purchaseAmount);
         })
 

@@ -1,18 +1,47 @@
 # Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+The project contains the smart contracts used by the Mimirium Network (see https://mimirium.io for more information).
+Truffle framework is used for compilation, testing and deployment. 
 
-# Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
+# Setup, Build and Test
+1.	Setup
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+```
+git clone ...
+npm install
+```
+
+2.	Compile
+
+```
+npm run compile
+```
+
+3.	Test
+
+In one console:
+```
+npm run ganache
+```
+
+In another console:
+```
+npm test
+```
+
+4.	Code coverage
+
+In one console:
+```
+npm run testrpc
+```
+
+In another console:
+```
+npm run coverage
+```
 
 # Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+No contributions are allowed at the moment
 
 If you want to learn more about creating good readme files then refer the following [guidelines](https://www.visualstudio.com/en-us/docs/git/create-a-readme). You can also seek inspiration from the below readme files:
 - [ASP.NET Core](https://github.com/aspnet/Home)

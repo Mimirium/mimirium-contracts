@@ -1,25 +1,20 @@
-var NodeRegister = artifacts.require("./NodeRegister.sol");
-var CompanyRegister = artifacts.require("./CompanyRegister.sol");
-var CampaignRegsiter = artifacts.require("./CampaignRegister.sol");
-/*var fs = require('fs');
+const NodeRegister = artifacts.require("./NodeRegister.sol");
+const CompanyRegister = artifacts.require("./CompanyRegister.sol");
+const CampaignRegister = artifacts.require("./CampaignRegister.sol");
+const ContractConfig = require("../js/ContractConfig.js");
 
-saveJson = function (network, contractData) {
-    let filename = "./release/" + network + ".json";
-    let jsonData = JSON.stringify(contractData, null, "\t");
-    fs.writeFile(filename, jsonData, function (err) {
-        if (err) {
-            return console.log(err);
-        }
-    });
-}*/
-
-module.exports = function (deployer, network) {
+module.exports = function(deployer, network) {
     deployer
         .deploy(NodeRegister)
         .then((node) => {
-            deployer.deploy(CompanyRegister)
+            ContractConfig.addContract(network, "NodeRegister", node.address, node.abi);
+            return deployer.deploy(CompanyRegister)
         })
         .then((company) => {
-            deployer.deploy(CampaignRegsiter, company)
+            ContractConfig.addContract(network, "CompanyRegister", company.address, company.abi);
+            return deployer.deploy(CampaignRegister, company.address)
+        })
+        .then((campaign) => {
+            ContractConfig.addContract(network, "CampaignRegister", campaign.address, campaign.abi);
         })
 };

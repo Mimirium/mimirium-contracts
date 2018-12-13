@@ -1,23 +1,15 @@
-var MimiriumToken = artifacts.require("./MimiriumToken.sol");
-var MimiriumExchange = artifacts.require("./MimiriumExchange.sol");
-var fs = require('fs');
+const MimiriumToken = artifacts.require("./MimiriumToken.sol");
+const MimiriumExchange = artifacts.require("./MimiriumExchange.sol");
+const ContractConfig = require("../js/ContractConfig.js");
 
-saveJson = function (network, contractData) {
-    let filename = "./release/" + network + ".json";
-    let jsonData = JSON.stringify(contractData, null, "\t");
-    fs.writeFile(filename, jsonData, function (err) {
-        if (err) {
-            return console.log(err);
-        }
-    });
-}
-
-module.exports = function (deployer, network) {
+module.exports = function(deployer, network) {
+    ContractConfig.init(network);
     deployer
         .deploy(MimiriumToken)
         .then((token) => {
+            ContractConfig.addContract(network, "MimiriumToken", token.address, token.abi);
             return deployer.deploy(MimiriumExchange, token.address)
         }).then((exchange) => {
-
+            ContractConfig.addContract(network, "MimiriumExchange", exchange.address, exchange.abi);
         })
 };

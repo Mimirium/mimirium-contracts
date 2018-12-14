@@ -55,7 +55,7 @@ contract CompanyRegister is Versionable, Ownable {
     }
 
     function generateUniqueId(uint256 _nonce) internal view returns (address) {
-        bytes20 id = ripemd160(keccak256(abi.encodePacked(_nonce, blockhash(block.number-1), block.timestamp)));
+        bytes20 id = ripemd160(abi.encodePacked(keccak256(abi.encodePacked(_nonce, blockhash(block.number-1), block.timestamp))));
         return address(id);
     }
 }

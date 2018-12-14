@@ -18,7 +18,7 @@ contract('CompanyRegister', function (accounts) {
 
     describe("Registering", function () {
 
-        it("owner can can register company", async () => {
+        it("owner can register company", async () => {
             let tx = await register.registerCompany("Test Company1", {from: owner});
             assert.equal(tx.logs[0].event, "CompanyRegistered");
         })

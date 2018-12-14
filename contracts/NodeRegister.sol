@@ -5,47 +5,57 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 contract NodeRegister is Versionable, Ownable {
 
+    enum NodeStatus { None, Registered, Active, Suspended }
+
     struct Node {
         address id;
         string name;
         string url;
         uint256 registrationTime;
+        uint256 balance;
+        NodeStatus status;
     }
-
-    mapping(address => bool) internal whitelisted;
 
     mapping(address => Node) internal nodes;
     address[] internal nodesList;
 
-    event NodeRegistered(Node node);
-    event NodeRevoked(Node node);
-    event NodeWhitelisted(address id);
+    event NodeRegistered(address id, string name, string url);
+    event NodeActivated(address id, uint256 balance);
+    event NodeSuspended();
 
-    modifier onlyWhitelisted() {
-        require(whitelisted[msg.sender] == true, "Address not whitelisted");
+    modifier onlyRegistered() {
+        require(nodes[msg.sender].status >= NodeStatus.Registered, "Address not registered");
         _;
     }
 
     constructor() public {
     }
 
-    function whitelistNode(address _id) public onlyOwner {
-        whitelisted[_id] = true;
-        emit NodeWhitelisted(_id);
+    function registerNode(address _id, string _name, string _url) public onlyOwner 
+    returns (address, string, string, uint256, uint256, NodeStatus) {
+        require(nodes[msg.sender].status < NodeStatus.Registered, "Address already is registered");
+        Node memory n = Node(_id, _name, _url, now, 0, NodeStatus.Registered);
+        nodes[_id] = n;
+        nodesList.push(_id);
+        emit NodeRegistered(_id, _name, _url);
+        return (n.id, n.name, n.url, n.registrationTime, n.balance, n.status);
     }
 
-    function registerNode(string _name, string _url) public onlyWhitelisted returns(address, string, string, uint256) {
+    function activateNode() public payable onlyRegistered {
+        require(msg.value >= 1 ether, "Insuficient funds");
         address id = msg.sender;
-        Node memory n = Node(id, _name, _url, now);
-        nodes[id] = n;
-        nodesList.push(id);
-        return (n.id, n.name, n.url, n.registrationTime);
+        uint256 balance = msg.value;
+        require(nodes[id].status >= NodeStatus.Registered, "Node not registered");
+        Node memory n = nodes[id];
+        n.balance += balance;
+        n.status = NodeStatus.Active;
+        emit NodeActivated(id, balance);
     }
 
-    function getNode(address _id) public view returns(address, string, string, uint256) {        
+    function getNode(address _id) public view returns(address, string, string, uint256, uint256, NodeStatus) {        
         require(nodes[_id].id == _id, "Node doesn't exist");
         Node memory n = nodes[_id];
-        return (n.id, n.name, n.url, n.registrationTime);
+        return (n.id, n.name, n.url, n.registrationTime, n.balance, n.status);
     }
 
     function getNodesList() public view returns(address[]) {

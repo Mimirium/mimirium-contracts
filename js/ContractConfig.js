@@ -24,7 +24,7 @@ class ContractConfig {
     }
 
     static addContract(network, contractName, contractAddress, contractAbi) {
-        let path = ContractConfig._getPath();
+        let path = ContractConfig._getPath(network);
         let data = ContractConfig._load(path);
         data[contractName] = {
             address: contractAddress,
@@ -34,12 +34,12 @@ class ContractConfig {
     }
 
     static getContract(network, contractName) {
-        let data = ContractConfig._load(ContractConfig._getPath());
+        let data = ContractConfig._load(ContractConfig._getPath(network));
         return data[contractName];
     }
 
     static getProtocol(network) {
-        let data = ContractConfig._load(ContractConfig._getPath());
+        let data = ContractConfig._load(ContractConfig._getPath(network));
         let addresses = [];
         let description = "";
         for (let contract in data) {

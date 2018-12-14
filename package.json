@@ -11,6 +11,7 @@
     "homepage": "https://mimirium.io",
     "scripts": {
         "compile": "npx truffle compile",
+        "migrate:dev": "npx truffle migrate --network development",
         "test": "npx truffle test",
         "lint:sol": "solium -d .",
         "lint:sol:fix": "solium -d . --fix",
@@ -18,7 +19,7 @@
         "lint:fix": "npm run lint:sol:fix",
         "console": "npx truffle console",
         "coverage": "npx solidity-coverage",
-        "ganache": "npx ganache-cli",
+        "ganache": "npx ganache-cli -m 'drop will peasant siege wisdom entry trial fly target minute emotion entry'",
         "testrpc": "npx testrpc-sc --gasLimit 0xfffffffffff --port 8555"
     },
     "repository": {
@@ -31,7 +32,7 @@
         "ethereum",
         "solidity"
     ],
-    "author": "Galin Dinkov <galin@mimirium.io>",
+    "author": "Mimirium <info@mimirium.io>",
     "license": "ISC",
     "devDependencies": {
         "eslint": "^5.9.0",

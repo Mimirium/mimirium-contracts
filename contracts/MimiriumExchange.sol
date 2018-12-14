@@ -14,13 +14,12 @@ contract MimiriumExchange is Versionable, Ownable {
     event MimiriumsPurchased(uint256 mimiriums, uint256 ethers, uint256 rate);
     event MimiriumsSold(uint256 mimiriums, uint256 ethers, uint256 rate);
 
-    constructor(MimiriumToken _token) public {
-        token = _token;
+    constructor(address _token) public {
+        token = MimiriumToken(_token);
         rate = 1;
     }
 
-    function setRate(uint256 _newRate) public {
-        require(msg.sender == owner(), "Not owner");
+    function setRate(uint256 _newRate) public onlyOwner {
         require(_newRate > 0, "Rate must be greated than 0");
         require(_newRate != rate, "Same rate provided");
         emit RateChanged(rate, _newRate);

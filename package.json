@@ -1,43 +1,44 @@
 {
-  "name": "mimirium-contracts",
-  "version": "0.0.1",
-  "description": "Smart Contracts for the Mimirium Network using the Ethereum Blockchain",
-  "main": "index.js",
-  "files": [
-    "build",
-    "contracts",
-    "test"
-  ],
-  "homepage": "https://mimirium.io",
-  "scripts": {
-    "test": "npx truffle test",
-    "lint:sol": "solium -d .",
-    "lint:sol:fix": "solium -d . --fix",
-    "lint": "npm run lint:sol",
-    "lint:fix": "npm run lint:sol:fix",
-    "console": "npx truffle console",
-    "coverage": "npx solidity-coverage",
-    "ganache": "npx ganache-cli",
-    "testrpc": "npx testrpc-sc --gasLimit 0xfffffffffff --port 8555"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://mimirium@dev.azure.com/mimirium/mimirium-network/_git/mimirium-contracts"
-  },
-  "keywords": [
-    "mimirium",
-    "blockchain",
-    "ethereum",
-    "solidity"
-  ],
-  "author": "Galin Dinkov <galin@mimirium.io>",
-  "license": "ISC",
-  "devDependencies": {
-    "eslint": "^5.9.0",
-    "ganache-cli": "^6.1.8",
-    "openzeppelin-solidity": "^2.0.0",
-    "solidity-coverage": "^0.5.11",
-    "solium": "^1.1.8",
-    "truffle": "^4.1.14"
-  }
+    "name": "mimirium-contracts",
+    "version": "0.0.1",
+    "description": "Smart Contracts for the Mimirium Network using the Ethereum Blockchain",
+    "main": "index.js",
+    "files": [
+        "build",
+        "contracts",
+        "test"
+    ],
+    "homepage": "https://mimirium.io",
+    "scripts": {
+        "compile": "npx truffle compile",
+        "test": "npx truffle test",
+        "lint:sol": "solium -d .",
+        "lint:sol:fix": "solium -d . --fix",
+        "lint": "npm run lint:sol",
+        "lint:fix": "npm run lint:sol:fix",
+        "console": "npx truffle console",
+        "coverage": "npx solidity-coverage",
+        "ganache": "npx ganache-cli",
+        "testrpc": "npx testrpc-sc --gasLimit 0xfffffffffff --port 8555"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://mimirium@dev.azure.com/mimirium/mimirium-network/_git/mimirium-contracts"
+    },
+    "keywords": [
+        "mimirium",
+        "blockchain",
+        "ethereum",
+        "solidity"
+    ],
+    "author": "Galin Dinkov <galin@mimirium.io>",
+    "license": "ISC",
+    "devDependencies": {
+        "eslint": "^5.9.0",
+        "ganache-cli": "^6.1.8",
+        "openzeppelin-solidity": "^2.0.0",
+        "solidity-coverage": "^0.5.11",
+        "solium": "^1.1.8",
+        "truffle": "^4.1.14"
+    }
 }

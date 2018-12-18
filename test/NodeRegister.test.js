@@ -32,6 +32,10 @@ contract('NodeRegister', function (accounts) {
             await assertThrows(register.registerNode(node2, "Test Node2", "http://testurl2.com/", {from: user1}));
         })
 
+        it("owner can NOT register same node twice", async () => {
+            await assertThrows(register.registerNode(node1, "Test Node1", "http://testurl1.com/"));
+        })
+
         it("registered nodes can activate themselves", async () => {
             let tx = await register.activateNode({from: node1, value: web3.toWei(2, 'ether')});
             assert.equal(tx.logs[0].event, "NodeActivated");

@@ -33,7 +33,7 @@ contract NodeRegister is Versionable, Ownable {
 
     function registerNode(address _id, string _name, string _url) public onlyOwner 
     returns (address, string, string, uint256, uint256, NodeStatus) {
-        require(nodes[msg.sender].status < NodeStatus.Registered, "Address already is registered");
+        require(nodes[_id].status < NodeStatus.Registered, "Address already is registered");
         Node memory n = Node(_id, _name, _url, now, 0, NodeStatus.Registered);
         nodes[_id] = n;
         nodesList.push(_id);

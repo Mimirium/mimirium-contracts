@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 import "./MimiriumToken.sol";
 import "./Versionable.sol";
@@ -26,7 +26,7 @@ contract MimiriumExchange is Versionable, Ownable {
         rate = _newRate;
     }
 
-    function () public payable {
+    function () external payable {
         _buy(msg.sender, msg.value);
     }
 
@@ -45,7 +45,7 @@ contract MimiriumExchange is Versionable, Ownable {
         emit MimiriumsPurchased(mimirAmount, _weiAmount, rate);
     }
 
-    function _sell(address _seller, uint256 _mimirAmount) internal {
+    function _sell(address payable _seller, uint256 _mimirAmount) internal {
         require(_seller != address(0), "Non null address require");
         uint256 weiAmount = _mimirAmount.div(rate);
         require (token.balanceOf(_seller) >= _mimirAmount, "You don't have such amount of mimiriums");

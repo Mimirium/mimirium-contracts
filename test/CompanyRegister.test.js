@@ -10,6 +10,8 @@ contract('CompanyRegister', function (accounts) {
         user1
     ] = accounts;
 
+    const multihash = "QmVcSqVEsvm5RR9mBLjwpb2XjFVn5bPdPL69mL8PH45pPC";
+
     let register;
 
     before(async () => {
@@ -19,12 +21,12 @@ contract('CompanyRegister', function (accounts) {
     describe("Registering", function () {
 
         it("owner can register company", async () => {
-            let tx = await register.registerCompany("Test Company1", {from: owner});
+            let tx = await register.registerCompany(multihash, "Test Company1", {from: owner});
             assert.equal(tx.logs[0].event, "CompanyRegistered");
         })
 
         it("non-owner node can NOT register a company", async () => {
-            await assertThrows(register.registerCompany("Test Company2", {from: node2}));
+            await assertThrows(register.registerCompany(multihash, "Test Company2", {from: node2}));
         })
     })
 
@@ -45,11 +47,12 @@ contract('CompanyRegister', function (accounts) {
         it("company data can be retrieved", async () => {
             let company = await register.getCompany(companiesList[0]);
             assert.isNotNull(company[0]);
-            assert.equal(company[1], "Test Company1");
-            assert.isNotNull(company[2]);
+            assert.isNotNull(company[1]);
+            assert.equal(company[2], "Test Company1");
             assert.isNotNull(company[3]);
             assert.isNotNull(company[4]);
             assert.isNotNull(company[5]);
+            assert.isNotNull(company[6]);
         })
     })
 })

@@ -9,15 +9,16 @@ class DummyData {
     static async populate() {
         let owner = web3.eth.accounts[0];
         let user1 = web3.eth.accounts[1];
+        const multihash = "QmVcSqVEsvm5RR9mBLjwpb2XjFVn5bPdPL69mL8PH45pPC";
 
         // Add dummy companies
         console.log("Registering companies:");
         let company = await CompanyRegister.deployed();
 
-        await company.registerCompany("Mimirium Ltd");
-        await company.registerCompany("Eurostat");
-        await company.registerCompany("Nielsen");
-        await company.registerCompany("Google Inc");
+        await company.registerCompany(multihash, "Mimirium Ltd");
+        await company.registerCompany(multihash, "Eurostat");
+        await company.registerCompany(multihash, "Nielsen");
+        await company.registerCompany(multihash, "Google Inc");
         let clist = await company.getCompaniesList();
         console.log(clist);
 
@@ -47,6 +48,7 @@ class DummyData {
 
         let campaigns = await CampaignRegister.deployed();    
         let id = await campaigns.createCampaign(
+            multihash, 
             0,
             clist[0],
             0,

@@ -1,4 +1,5 @@
-pragma solidity ^ 0.4.24;
+pragma solidity ^0.5.0;
+
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 // TODO: Refactor to support multiple owners
@@ -12,13 +13,13 @@ contract ProtocolRegister is Ownable {
     constructor() public {
     }
 
-    function registerProtocol(string _description, address[] _addresses) public onlyOwner returns(uint256) {
+    function registerProtocol(string memory _description, address[] memory _addresses) public onlyOwner returns(uint256) {
         uint256 version = _contracts.push(_addresses);
         emit VersionRegistered(version, _description, _addresses);
         return version;
     }
 
-    function getProtocol(uint256 _version) public view returns(address[]) {
+    function getProtocol(uint256 _version) public view returns(address[] memory) {
         require(_version <= _contracts.length, "Invalid version");
         return _contracts[_version-1];
     }

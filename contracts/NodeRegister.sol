@@ -1,4 +1,4 @@
-pragma solidity ^ 0.4.24;
+pragma solidity ^0.5.0;
 
 import "./Versionable.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
@@ -31,9 +31,9 @@ contract NodeRegister is Versionable, Ownable {
     constructor() public {
     }
 
-    function registerNode(address _id, string _name, string _url) public onlyOwner 
-    returns (address, string, string, uint256, uint256, NodeStatus) {
-        require(nodes[_id].status < NodeStatus.Registered, "Address already is registered");
+    function registerNode(address _id, string memory _name, string memory _url) public onlyOwner 
+        returns (address, string memory, string memory, uint256, uint256, NodeStatus) {
+        require(nodes[_id].status < NodeStatus.Registered, "Address already registered");
         Node memory n = Node(_id, _name, _url, now, 0, NodeStatus.Registered);
         nodes[_id] = n;
         nodesList.push(_id);
@@ -52,13 +52,13 @@ contract NodeRegister is Versionable, Ownable {
         emit NodeActivated(id, balance);
     }
 
-    function getNode(address _id) public view returns(address, string, string, uint256, uint256, NodeStatus) {        
+    function getNode(address _id) public view returns(address, string memory, string memory, uint256, uint256, NodeStatus) {        
         require(nodes[_id].id == _id, "Node doesn't exist");
         Node memory n = nodes[_id];
         return (n.id, n.name, n.url, n.registrationTime, n.balance, n.status);
     }
 
-    function getNodesList() public view returns(address[]) {
+    function getNodesList() public view returns(address[] memory) {
         return nodesList;
     }
 }

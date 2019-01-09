@@ -25,8 +25,6 @@ contract CompanyRegister is Versionable, Ownable {
         uint256 createdTime
     );
 
-    event TestEvent(string hui);
-
     constructor() public {
     }
 
@@ -36,7 +34,6 @@ contract CompanyRegister is Versionable, Ownable {
         companies[id] = c;
         companiesList.push(id);
         emit CompanyRegistered(id, _multihash, _name, now);
-        emit TestEvent("hui");
         return id;
     }
 

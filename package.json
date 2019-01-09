@@ -12,7 +12,7 @@
     "scripts": {
         "compile": "npx truffle compile",
         "migrate:dev": "npx truffle migrate --network development",
-        "test": "npx truffle test",
+        "test": "npx truffle compile && npx truffle test",
         "lint:sol": "solium -d .",
         "lint:sol:fix": "solium -d . --fix",
         "lint": "npm run lint:sol",

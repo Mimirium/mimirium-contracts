@@ -1,4 +1,4 @@
-pragma solidity ^0.5.0;
+pragma solidity >0.4.99 <0.6.0;
 
 import "./Versionable.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
@@ -25,6 +25,8 @@ contract CompanyRegister is Versionable, Ownable {
         uint256 createdTime
     );
 
+    event TestEvent(string hui);
+
     constructor() public {
     }
 
@@ -34,6 +36,7 @@ contract CompanyRegister is Versionable, Ownable {
         companies[id] = c;
         companiesList.push(id);
         emit CompanyRegistered(id, _multihash, _name, now);
+        emit TestEvent("hui");
         return id;
     }
 

@@ -31,7 +31,7 @@ contract('MimiriumToken', function (accounts) {
 
         it("can be minted by minter", async () => {
             let balanceBefore = (await token.balanceOf(user1)).toNumber();
-            let quantity = web3.toWei(1, "ether");
+            let quantity = web3.utils.toWei("1", "ether");
             let tx = await token.mint(user1, quantity);
             let balanceAfter = (await token.balanceOf(user1)).toNumber();
             assert.equal(balanceAfter, balanceBefore + quantity);
@@ -39,7 +39,7 @@ contract('MimiriumToken', function (accounts) {
         })
 
         it("can NOT be minted by non-minter", async () => {
-            let quantity = web3.toWei(1, "ether");
+            let quantity = web3.utils.toWei("1", "ether");
             await assertThrows(token.mint(user1, quantity, {from: user1}));
         })
     })

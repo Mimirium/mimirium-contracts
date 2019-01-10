@@ -1,20 +1,23 @@
-const assertThrows = require("./utils/assertThrows.js");
+const assertFail = require("./utils/assertFail.js");
+const assertEvent = require("./utils/assertEvent.js");
 const MimiriumToken = artifacts.require('./MimiriumToken.sol')
 const MimiriumExchange = artifacts.require('./MimiriumExchange.sol')
 
 contract('MimiriumExchange', function (accounts) {
 
     const [
-        owner,
-        user1
+        OWNER,
+        USER1
     ] = accounts;
 
     let token;
     let exchange;
 
     before(async () => {
-        token = await MimiriumToken.new();            
+        token = await MimiriumToken.new();
+        assert.isNotNull(token);
         exchange = await MimiriumExchange.new(token.address);
+        assert.isNotNull(exchange);
     })
 
     describe("Basic", function () {
@@ -26,44 +29,57 @@ contract('MimiriumExchange', function (accounts) {
 
         it("can be added as minter", async () => {
             let tx = await token.addMinter(exchange.address);
-            assert.equal(tx.logs[0].event, "MinterAdded");
+            assertEvent(tx, "MinterAdded");
         })
 
         it("owner can change the rate", async () => {
-            let rate = await exchange.rate();
-            let tx = await exchange.setRate(rate*2, {from: owner});
-            assert.equal(tx.logs[0].event, "RateChanged");
+            let oldRate = await exchange.rate();
+            let newRate = oldRate.mul(web3.utils.toBN(2));
+            let tx = await exchange.setRate(newRate, {from: OWNER});
+            assertEvent(tx, "RateChanged", [oldRate, newRate]);
         })
 
         it("non-owner can NOT change the rate", async () => {
-            await assertThrows(exchange.setRate(1, {from: user1}));
+            await assertFail(exchange.setRate(1, {from: USER1}));
         })
     })
 
     describe("Exchange", function () {
 
-        const purchaseAmount = 1*10**9; // 1 Gwei
+        const purchaseAmount = web3.utils.toBN(1*10**9); // 1 Gwei
 
         it("can buy mimiriums", async () => {
-            let balanceBefore = (await token.balanceOf(user1)).toNumber();
+            let balanceBefore = await token.balanceOf(USER1);
             let rate = await exchange.rate();
-            let tx = await exchange.buy({from: user1, value: purchaseAmount});
-            let balanceAfter = (await token.balanceOf(user1)).toNumber();
-            assert.equal(balanceAfter, balanceBefore + purchaseAmount*rate);
-            let balance = (await web3.eth.getBalance(exchange.address)).toNumber();
-            assert.equal(balance, purchaseAmount);
+            let mimirAmount = purchaseAmount.mul(rate);
+
+            let tx = await exchange.buy({from: USER1, value: purchaseAmount});
+            assertEvent(tx, "MimiriumsPurchased", [mimirAmount ,purchaseAmount, rate]);
+
+            let balanceAfter = await token.balanceOf(USER1);
+            assert(balanceAfter.eq(balanceBefore.add(mimirAmount)));
+
+            let balance = await web3.eth.getBalance(exchange.address);
+            assert(balance.toString() == purchaseAmount.toString());
         })
 
         it("can sell mimiriums", async () => {
-            let totalSupplyBefore = (await token.totalSupply()).toNumber();
-            let balanceBefore = (await token.balanceOf(user1)).toNumber();
+            let totalSupplyBefore = await token.totalSupply();
+            let balanceBefore = await token.balanceOf(USER1);
             let sellAmount = balanceBefore;
-            let tx1 = await token.approve(exchange.address, sellAmount, {from: user1});
-            let tx2 = await exchange.sell(sellAmount, {from: user1});
-            let balanceAfter = (await token.balanceOf(user1)).toNumber();
-            let totalSupplyAfter = (await token.totalSupply()).toNumber();
-            assert.equal(balanceAfter, 0);
-            assert.equal(totalSupplyAfter, totalSupplyBefore - sellAmount);
+            let rate = await exchange.rate();
+            let weiAmount = purchaseAmount;
+
+            let tx1 = await token.approve(exchange.address, sellAmount, {from: USER1});
+            assertEvent(tx1, "Approval");
+
+            let tx2 = await exchange.sell(sellAmount, {from: USER1});
+            assertEvent(tx2, "MimiriumsSold", [sellAmount, weiAmount, rate]);
+
+            let balanceAfter = await token.balanceOf(USER1);
+            let totalSupplyAfter = await token.totalSupply();
+            assert.equal(balanceAfter.toString(), "0");
+            assert(totalSupplyAfter.eq(totalSupplyBefore.sub(sellAmount)));
         })
     })
 })

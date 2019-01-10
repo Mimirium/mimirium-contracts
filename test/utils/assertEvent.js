@@ -1,6 +1,6 @@
 function assertArgsArray(event, asserted, shouldbe) {
     for (let i = 0; i < shouldbe.length; i++) {
-        if (shouldbe[i] != asserted[i]) {
+        if (shouldbe[i].toString() != asserted[i].toString()) {
             assert.fail(`Argument assertion failed for event '${event}' -> '${asserted[i]}' should be '${shouldbe[i]}'`);
         }
     }
@@ -9,7 +9,7 @@ function assertArgsArray(event, asserted, shouldbe) {
 function assertArgsObject(event, asserted, shouldbe) {
     for (let k in shouldbe) {
         if (k in asserted) {
-            assert.equal(shouldbe[k], asserted[k], `Argument assertion failed for '${event}' -> '${k}' should be '${shouldbe[k]}' instead '${asserted[k]}'`);
+            assert.equal(shouldbe[k].toString(), asserted[k].toString(), `Argument assertion failed for '${event}' -> '${k}' should be '${shouldbe[k]}' instead '${asserted[k]}'`);
         } else {
             assert.fail(`Missing argument '${k} in event '${event}'`);
         }

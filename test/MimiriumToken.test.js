@@ -1,17 +1,22 @@
-const assertThrows = require("./utils/assertThrows.js");
+const assertFail = require("./utils/assertFail.js");
+const assertEvent = require("./utils/assertEvent.js");
 const MimiriumToken = artifacts.require('./MimiriumToken.sol')
 
 contract('MimiriumToken', function (accounts) {
 
     const [
-        owner,
-        user1
+        OWNER,
+        USER1
     ] = accounts;
+
+    const ONE_ETHER = web3.utils.toWei(web3.utils.toBN(1), "ether");
 
     let token;
 
     beforeEach(async () => {
         token = await MimiriumToken.new();            
+        assert.isNotNull(token);
+        console.log(typeof ONE_ETHER);
     })
 
     describe("Deployment", function () {
@@ -30,17 +35,19 @@ contract('MimiriumToken', function (accounts) {
     describe("Minting", function () {
 
         it("can be minted by minter", async () => {
-            let balanceBefore = (await token.balanceOf(user1)).toNumber();
-            let quantity = web3.utils.toWei("1", "ether");
-            let tx = await token.mint(user1, quantity);
-            let balanceAfter = (await token.balanceOf(user1)).toNumber();
-            assert.equal(balanceAfter, balanceBefore + quantity);
+            let balanceBefore = await token.balanceOf(USER1);
+            let quantity = ONE_ETHER;
 
+            let tx = await token.mint(USER1, quantity);
+            assertEvent(tx, "Transfer");
+
+            let balanceAfter = await token.balanceOf(USER1);
+            assert(balanceAfter.eq(balanceBefore.add(quantity)));
         })
 
         it("can NOT be minted by non-minter", async () => {
-            let quantity = web3.utils.toWei("1", "ether");
-            await assertThrows(token.mint(user1, quantity, {from: user1}));
+            let quantity = ONE_ETHER;
+            await assertFail(token.mint(USER1, quantity, {from: USER1}));
         })
     })
 })

@@ -4,6 +4,7 @@ import "./Versionable.sol";
 import "./CompanyRegister.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
+// TODO: Replace ownable with multiple roles
 contract CampaignRegister is Versionable, Ownable {
 
     enum DataTypes { Survey, DataMining, FederatedLearning }

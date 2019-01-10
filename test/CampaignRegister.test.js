@@ -41,7 +41,7 @@ contract('CampaignRegister', function (accounts) {
             let tx = await companies.registerCompany(MULTIHASH, "Mimirium Ltd");
             assertEvent(tx, "CompanyRegistered", (args) => {
                 assert.isNotEmpty(args.id);
-                assert(args.multihash == MULTIHASH, "multihash is not correct");
+                assert(args.multihash == MULTIHASH, "MULTIHASH is not correct");
                 assert(args.name == "Mimirium Ltd", "name is not correct");
                 assert(args.createdTime.toNumber() > 0, "createdTime is not correct");
             });
@@ -54,13 +54,23 @@ contract('CampaignRegister', function (accounts) {
 
     describe("Creating Campaigns", function () {
 
-        it("owner can create campaign with correct data", async () => {
-            let tx = await campaigns.createCampaign(MULTIHASH, DataTypes.Survey, companyId, 0, 10, NOW, NOW + ONE_DAY, {from: OWNER, value: ONE_ETHER});
+        it("OWNER can create campaign with correct data", async () => {
+            let tx = await campaigns.createCampaign(
+                MULTIHASH,              // Hash in IPFS
+                DataTypes.Survey,       // Type of the campaign - survey, data mining etc.
+                companyId,              // Id of the company ordering the campaign
+                0,                      // Minimum participants
+                10,                     // Maximum participants
+                NOW,                    // Starting time of the campaign
+                NOW + ONE_DAY,          // Deadline of the campaign
+                {
+                    from: OWNER,        // Must be created by the contact's OWNER
+                    value: ONE_ETHER    // The total budget of the campaign
+                });
             assertEvent(tx, "CampaignCreated", (args) => {
                 assert.isNotEmpty(args.id);
-                console.log(args.multihash.toString());
                 assert(args.multihash.toString() == MULTIHASH, "multihash is not correct");
-                assert(args.dataType, DataTypes.Survey);
+                assert(args.dataType, DataTypes.Survey, "dataType is not correct");
                 assert(args.company == companyId, "company is not registered");
                 assert(args.minRespondents.toNumber() == 0, "minRespondents is incorrect");
                 assert(args.maxRespondents.toNumber() == 10, "maxRespondents is incorrect");
@@ -68,33 +78,46 @@ contract('CampaignRegister', function (accounts) {
                 assert(args.startTime.toNumber() == NOW, "startTime is incorrect");
                 assert(args.endTime.toNumber() == NOW + ONE_DAY, "endTime is incorrect");
             });
-            assert.equal(tx.logs[0].event, "CampaignCreated");
         })
 
         it("non-owner can NOT create campaign with correct data", async () => {
-            await assertFail(campaigns.createCampaign(MULTIHASH, DataTypes.Survey, companyId, 0, 10, NOW, NOW + ONE_DAY, {from: USER1, value: ONE_ETHER}));
+            let sender = USER1; // non-owner
+            await assertFail(
+                campaigns.createCampaign(MULTIHASH, DataTypes.Survey, companyId, 0, 10, NOW, NOW + ONE_DAY, {from: sender, value: ONE_ETHER}));
         })
 
-        /*it("owner can NOT create campaign without budget", async () => {
-            await assertThrows(campaigns.createCampaign(multihash, DataTypes.Survey, companyId, 0, 10, now, now + oneDay, {from: owner, value: 0}));
+        it("owner can NOT create campaign without budget", async () => {
+            let budget = 0;
+            await assertFail(
+                campaigns.createCampaign(MULTIHASH, DataTypes.Survey, companyId, 0, 10, NOW, NOW + ONE_DAY, {from: OWNER, value: budget}),
+                "Give some cash"
+            );
         })
 
         it("owner can NOT create campaign with incorrect timing", async () => {
-            await assertThrows(campaigns.createCampaign(multihash, DataTypes.Survey, companyId, 0, 10, now, now - oneDay, {from: owner, value: web3.utils.toWei("1", "ether")}));
-            await assertThrows(campaigns.createCampaign(multihash, DataTypes.Survey, companyId, 0, 10, now - oneDay, now + oneDay, {from: owner, value: web3.utils.toWei("1", "ether")}));
+            let startTime = NOW;
+            let endTime = NOW - ONE_DAY; // Deadline is before start time
+            await assertFail(
+                campaigns.createCampaign(MULTIHASH, DataTypes.Survey, companyId, 0, 10, startTime, endTime, {from: OWNER, value: ONE_ETHER}),
+                "endTime must be after startTime");
+            startTime = NOW - ONE_DAY; // Start time is in the past
+            endTime = NOW + ONE_DAY; 
+            await assertFail(
+                campaigns.createCampaign(MULTIHASH, DataTypes.Survey, companyId, 0, 10, startTime, endTime, {from: OWNER, value: ONE_ETHER}),
+                "Campaigns cannot be in the past"
+            );
         })
 
         it("owner can NOT create campaign from non-existing company", async () => {
             const nonExistingCompany = "0x00000000000000000000000000000000";
-            try {
-                await campaigns.createCampaign(multihash, DataTypes.Survey, nonExistingCompany, 0, 10, now, now + oneDay, {from: owner, value: web3.utils.toWei("1", "ether")});
-            } catch(err) {
-                assert(err.reason == "This company is not registered");
-            }
-        })*/
+            await assertFail(
+                campaigns.createCampaign(MULTIHASH, DataTypes.Survey, nonExistingCompany, 0, 10, NOW, NOW + ONE_DAY, {from: OWNER, value: ONE_ETHER}),
+                "company is not registered"
+            );
+        })
     })
 
-    /*describe("Listing", function () {
+    describe("Listing", function () {
 
         let campaignsList;
 
@@ -106,18 +129,16 @@ contract('CampaignRegister', function (accounts) {
 
         it("campaign data can be retrieved", async () => {
             let campaign = await campaigns.getCampaign(campaignsList[0]);
-            console.log(campaign);
-            return;
-            assert.isArray(campaign);
-            assert.isNotNull(campaign[0]);                      // id
-            assert.isNotNull(campaign[1]);                      // multihash
-            assert.equal(campaign[2], DataTypes.Survey);        // dataType
-            assert.equal(campaign[3], companyId);               // company
-            assert.equal(campaign[4], 0);                       // minRespondents
-            assert.equal(campaign[5], 10);                      // maxRespondends
-            assert.equal(campaign[6], web3.utils.toWei("1", "ether"));  // budget
-            assert.equal(campaign[7], now);                     // startTime
-            assert.equal(campaign[8], now + oneDay);            // endTime
+            assert.isObject(campaign, "Campaign doesn't exists");
+            assert.isNotEmpty(campaign["0"], "Incorrect id");               
+            assert.isNotNull(campaign["1"], "Incorrect multihash");                
+            assert.equal(campaign["2"], DataTypes.Survey, "Incorrect dataType");   
+            assert.equal(campaign["3"], companyId, "Incorrect companyId");           
+            assert.equal(campaign["4"], 0, "Incorrect minRespondents");                  
+            assert.equal(campaign["5"], 10, "Incorrect maxRespondends");            
+            assert.equal(campaign["6"], ONE_ETHER, "Incorrect budget");         
+            assert.equal(campaign["7"], NOW, "Incorrect startTime");            
+            assert.equal(campaign["8"], NOW + ONE_DAY, "Incorrect endTime");      
         })
-    })*/
+    })
 })

@@ -3,7 +3,7 @@ async function assertFail(promise, message) {
         await promise;
     } catch (error) {
         if (message) {
-            assert(error.reason == message, `Wrong failure type, expected '${message}'`);
+            assert(error.message.includes(message), `Wrong failure type, expected '${message}'`);
         }
         return;
     }

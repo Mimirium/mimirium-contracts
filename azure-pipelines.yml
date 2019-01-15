@@ -21,7 +21,7 @@ steps:
     npm test
   displayName: 'Run Unit Tests'
 
-- script: |
-    npm run testrpc &
-    npm run coverage
-  displayName: 'Code Coverage tests'
+# - script: |
+#     npm run testrpc &
+#     npm run coverage
+#   displayName: 'Code Coverage tests'

@@ -5,6 +5,10 @@ import "./CompanyRegister.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 // TODO: Replace ownable with multiple roles
+// TODO: Replace ether budget with mimiriums
+// TODO: Add logic for campaign completion
+// TODO: Implement time filter, so only new campaigns can be fetched
+// TODO: Check min max respondents
 contract CampaignRegister is Versionable, Ownable {
 
     enum DataTypes { Survey, DataMining, FederatedLearning }
@@ -62,8 +66,7 @@ contract CampaignRegister is Versionable, Ownable {
         require(companyReg.companyExists(_company), "This company is not registered");
         require(_endTime > _startTime, "endTime must be after startTime");
         require(_startTime >= now, "Campaigns cannot be in the past");
-        require(msg.value > 0, "Give some cash");
-        // TODO: Check min max respondents
+        require(msg.value > 0, "Give some cash");        
 
         bytes32 id = generateUniqueId();
         Campaign memory c = Campaign(id, _multihash, _dataType, _company, _minRespondents, _maxRespondents, msg.value, _startTime, _endTime);
@@ -79,8 +82,7 @@ contract CampaignRegister is Versionable, Ownable {
         Campaign storage c = campaigns[_id];
         return (c.id, c.multihash, c.dataType, c.company, c.minRespondents, c.maxRespondents, c.budget, c.startTime, c.endTime);
     }
-
-    // TODO: Implement time filter
+    
     function getCampaignsList() public view returns(bytes32[] memory) {
         return campaignsList;
     }

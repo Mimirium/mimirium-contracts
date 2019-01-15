@@ -3,6 +3,7 @@ pragma solidity >0.4.99 <0.6.0;
 import "./Versionable.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
+// TODO: Replace Ownable with Roles
 contract CompanyRegister is Versionable, Ownable {
 
     struct Company {
@@ -41,7 +42,7 @@ contract CompanyRegister is Versionable, Ownable {
         return (_id != bytes32(0) && companies[_id].id == _id);
     }
 
-    function getCompany(bytes32 _id) public view returns(bytes32, string memory, string memory, uint256, uint256, uint256, uint256) {        
+    function getCompany(bytes32 _id) public view returns(bytes32, string memory, string memory, uint256, uint256, uint256, uint256) {
         require(companyExists(_id), "Company doesn't exist");
         Company memory c = companies[_id];
         return (c.id, c.multihash, c.name, c.balance, c.createdTime, c.lastCampaignTime, c.spent);

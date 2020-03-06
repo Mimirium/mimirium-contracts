@@ -14,4 +14,5 @@ npm run migrate:dev
 echo 'OK'
 
 echo 'POPULATE DUMMY DATA'
-npx truffle exec js/PopulateDummyData.js
+npm run populate
+echo 'OK'

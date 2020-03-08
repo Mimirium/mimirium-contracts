@@ -17,7 +17,7 @@ const DEFAULT = {
     gasPrice: 2e9
 }
 
-const walletPath = './wallet.json'
+const walletPath = './private/wallet.json'
 const wallet = HDWallet(walletPath)
 
 module.exports = {

@@ -41,8 +41,8 @@ contract NodeRegister is Versionable, Ownable {
         return (n.id, n.name, n.url, n.registrationTime, n.balance, n.status);
     }
 
-    function activateNode() public /*payable */onlyRegistered {
-        uint256 balance = 2 ether;//msg.value;
+    function activateNode() public payable onlyRegistered {
+        uint256 balance = msg.value;
         require(balance >= 1 ether, "Insuficient funds");
         address id = msg.sender;
         require(nodes[id].status >= NodeStatus.Registered, "Node not registered");

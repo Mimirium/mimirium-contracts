@@ -62,12 +62,12 @@ contract CampaignRegister is Versionable, Ownable {
         uint256 _budget,
         uint256 _startTime,
         uint256 _endTime)
-        public /*payable*/ onlyOwner
+        public payable onlyOwner
         returns(bytes32) {  
         require(companyReg.companyExists(_company), "This company is not registered");
         require(_endTime > _startTime, "endTime must be after startTime");
-        //require(_startTime >= now, "Campaigns cannot be in the past");
-        //require(msg.value > 0, "Give some cash");
+        require(_startTime >= now, "Campaigns cannot be in the past");
+        require(msg.value > 0, "Give some cash");
         require(_budget > 0, "Give some cash");
 
         bytes32 id = generateUniqueId();

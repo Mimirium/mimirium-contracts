@@ -40,12 +40,12 @@ module.exports = {
             gasPrice: 2e9
         },
         rinkeby: {
-            network_id: 3,
+            network_id: 4,
             provider: function () {
-                return new HDWalletProvider(wallet.mnemonic, "https://rinkeby.infura.io/" + wallet.infuraToken)
+                return new HDWalletProvider(wallet.mnemonic, "https://rinkeby.infura.io/v3/" + wallet.infuraToken)
             },
             gas: 4700000,
-            gasPrice: 2e9
+            gasPrice: 5e9
         },
         mainnet: {
             network_id: 1,

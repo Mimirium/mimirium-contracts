@@ -12,7 +12,3 @@ echo 'OK'
 echo 'MIGRATE'
 npm run migrate:dev
 echo 'OK'
-
-echo 'POPULATE DUMMY DATA'
-npm run populate
-echo 'OK'

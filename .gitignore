@@ -1,5 +1,10 @@
 # Wallet
-wallet.json
+private
+
+# Builds
+build
+release
+coverage
 
 # Logs
 logs

@@ -1,6 +1,6 @@
 const fs = require('fs')
 
-const HDWallet = (walletPath = './wallet.json') => {
+const HDWallet = (walletPath = './private/wallet.json') => {
     try {
         const data = JSON.parse(fs.readFileSync(walletPath))
         return data;

@@ -4,6 +4,7 @@ private
 # Builds
 build
 coverage
+package-lock.json
 
 # Logs
 logs

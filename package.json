@@ -1,6 +1,6 @@
 {
     "name": "mimirium-contracts",
-    "version": "0.1.1",
+    "version": "0.2.1",
     "description": "Smart Contracts for the Mimirium Network using the Ethereum Blockchain",
     "main": "index.js",
     "files": [
@@ -12,6 +12,7 @@
     "scripts": {
         "compile": "npx truffle compile",
         "migrate:dev": "npx truffle migrate --network development",
+        "migrate:rinkeby": "npx truffle migrate --network rinkeby",
         "test": "npx truffle compile && npx truffle test",
         "lint:sol": "solium -d .",
         "lint:sol:fix": "solium -d . --fix",
@@ -24,7 +25,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://mimirium@dev.azure.com/mimirium/mimirium-network/_git/mimirium-contracts"
+        "url": "https://github.com/Mimirium/mimirium-contracts.git"
     },
     "keywords": [
         "mimirium",
@@ -33,11 +34,14 @@
         "solidity"
     ],
     "author": "Mimirium <info@mimirium.io>",
-    "license": "ISC",
+    "license": "MIT",
     "devDependencies": {
+        "@truffle/hdwallet-provider": "^1.0.32",
+        "coveralls": "^3.0.9",
         "eslint": "^5.12.0",
         "ganache-cli": "^6.2.5",
         "openzeppelin-solidity": "^2.1.1",
+        "sha3": "^2.1.1",
         "solidity-coverage": "^0.5.1",
         "solium": "^1.2.1",
         "truffle": "^5.0.1"

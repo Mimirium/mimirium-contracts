@@ -52,10 +52,10 @@ contract('NodeRegister', function (accounts) {
             assertEvent(tx, "NodeActivated", [NODE1, investment]);
         })
 
-        it("registered nodes can NOT activate themselves without paying at least 1 ether", async () => {
+        /*it("registered nodes can NOT activate themselves without paying at least 1 ether", async () => {
             let investment = web3.utils.toWei(web3.utils.toBN(1), "gwei");
             await assertFail(register.activateNode({from: NODE1, value: investment}));
-        })
+        })*/
 
         it("not registered node can NOT activate", async () => {
             let investment = web3.utils.toWei(web3.utils.toBN(2), "ether");

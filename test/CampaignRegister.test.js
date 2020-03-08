@@ -63,6 +63,7 @@ contract('CampaignRegister', function (accounts) {
                 companyId,              // Id of the company ordering the campaign
                 0,                      // Minimum participants
                 10,                     // Maximum participants
+                ONE_ETHER,              // Budget
                 NOW,                    // Starting time of the campaign
                 NOW + ONE_DAY,          // Deadline of the campaign
                 {
@@ -85,14 +86,14 @@ contract('CampaignRegister', function (accounts) {
         it("non-owner can NOT create campaign with correct data", async () => {
             let sender = USER1; // non-owner
             await assertFail(
-                campaigns.createCampaign(MULTIHASH, DataTypes.Survey, companyId, 0, 10, NOW, NOW + ONE_DAY, {from: sender, value: ONE_ETHER})
+                campaigns.createCampaign(MULTIHASH, DataTypes.Survey, companyId, 0, 10, ONE_ETHER, NOW, NOW + ONE_DAY, {from: sender, value: ONE_ETHER})
             );
         })
 
         it("owner can NOT create campaign without budget", async () => {
             let budget = 0;
             await assertFail(
-                campaigns.createCampaign(MULTIHASH, DataTypes.Survey, companyId, 0, 10, NOW, NOW + ONE_DAY, {from: OWNER, value: budget}),
+                campaigns.createCampaign(MULTIHASH, DataTypes.Survey, companyId, 0, 10, budget, NOW, NOW + ONE_DAY, {from: OWNER, value: budget}),
                 "Give some cash"
             );
         })
@@ -101,12 +102,12 @@ contract('CampaignRegister', function (accounts) {
             let startTime = NOW;
             let endTime = NOW - ONE_DAY; // Deadline is before start time
             await assertFail(
-                campaigns.createCampaign(MULTIHASH, DataTypes.Survey, companyId, 0, 10, startTime, endTime, {from: OWNER, value: ONE_ETHER}),
+                campaigns.createCampaign(MULTIHASH, DataTypes.Survey, companyId, 0, 10, ONE_ETHER, startTime, endTime, {from: OWNER, value: ONE_ETHER}),
                 "endTime must be after startTime");
             startTime = NOW - ONE_DAY; // Start time is in the past
             endTime = NOW + ONE_DAY; 
             await assertFail(
-                campaigns.createCampaign(MULTIHASH, DataTypes.Survey, companyId, 0, 10, startTime, endTime, {from: OWNER, value: ONE_ETHER}),
+                campaigns.createCampaign(MULTIHASH, DataTypes.Survey, companyId, 0, 10, ONE_ETHER, startTime, endTime, {from: OWNER, value: ONE_ETHER}),
                 "Campaigns cannot be in the past"
             );
         })
@@ -114,7 +115,7 @@ contract('CampaignRegister', function (accounts) {
         it("owner can NOT create campaign from non-existing company", async () => {
             const nonExistingCompany = "0x00000000000000000000000000000000";
             await assertFail(
-                campaigns.createCampaign(MULTIHASH, DataTypes.Survey, nonExistingCompany, 0, 10, NOW, NOW + ONE_DAY, {from: OWNER, value: ONE_ETHER}),
+                campaigns.createCampaign(MULTIHASH, DataTypes.Survey, nonExistingCompany, 0, 10, ONE_ETHER, NOW, NOW + ONE_DAY, {from: OWNER, value: ONE_ETHER}),
                 "company is not registered"
             );
         })

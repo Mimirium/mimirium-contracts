@@ -1,3 +1,10 @@
+# Wallet
+private
+
+# Builds
+build
+coverage
+
 # Logs
 logs
 *.log

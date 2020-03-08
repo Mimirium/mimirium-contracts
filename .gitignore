@@ -3,7 +3,6 @@ private
 
 # Builds
 build
-release
 coverage
 
 # Logs
